@@ -1,2 +1,2 @@
 # SATsolver
-[Python3] SAT solver with DPLL algorithm implementation
+**[Python3]** SAT solver with DPLL algorithm implementation
