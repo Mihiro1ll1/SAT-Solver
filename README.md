@@ -5,8 +5,15 @@
   ### Input  
   Logical Function written in CNF (Conjunctive Normal Form).  
   Example: `[[1,-2],[3,-4,-5],[6]]`   
-       it means to (A+B*)(C+D*+E*)F (* means NOT).  
-       Each number represents a corresponding logical variable.  
-       Minus signifies the negation of its logical variable.  
+      it means (A+B*)(C+D*+E*)F (* means NOT).  
+      Each number represents a corresponding logical variable.  
+      Minus signifies the negation of its logical variable.  
   
   ### Output
+  Judgement Result  
+  Satisfiable pattern (if possible)
+  Example: `Satisfiable!  
+  [-2, -5, 6]`   
+
+
+
