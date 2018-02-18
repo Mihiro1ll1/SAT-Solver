@@ -1,6 +1,6 @@
 import sys
 import networkx as nx
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def find_node(G, attr, value): #G内のnodeのうちattr=valueのものをリストで抽出
 
@@ -214,6 +214,7 @@ def DPLL(cnf):
 
 
 if __name__ == '__main__':
-    test = [[-5,6],[-1,2],[-1,3,5],[-2,4],[-3,-4],[1,-2,5],[2,3],[2,-3]]
+    #test = [[-5,6],[-1,2],[-1,3,5],[-2,4],[-3,-4],[1,-2,5],[2,3],[2,-3]]
+    test = [[1,-2],[3,-4,-5],[6]] 
     print(DPLL(test))
 

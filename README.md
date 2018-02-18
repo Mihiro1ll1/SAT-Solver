@@ -17,8 +17,8 @@
 	conditions that make logical function True (- means Don't care).
   
   ### Requirement  
-  To use this function, you have to install networkx and matplotlib plugins.  
-  `pip3 install networkx matplotlib`  
+  To use this function, you have to install the **networkx** plugin.  
+  `pip3 install networkx`  
 
   ### Usage
   First, place SAT.py in the same directory as the file in which 
