@@ -4,7 +4,7 @@ import sys
 import copy
 import networkx as nx
 
-def flatter(lst): #二重リストをフラットする
+def _flatter(lst): #二重リストをフラットする
 # {{{
     x = []
     for i in lst:
@@ -14,7 +14,7 @@ def flatter(lst): #二重リストをフラットする
     return x
 # }}}
 
-def merge(ft):
+def _merge(ft):
 # {{{
     ft_ = [[] for i in range(len(ft)-1)]
     flag = [[1 for j in range(len(ft[i]))] for i in range(len(ft))]
@@ -50,7 +50,7 @@ def merge(ft):
     return [ft_, remains]
 # }}}
 
-def get_prime(tt):
+def _get_prime(tt):
 # {{{
     ft = [[] for i in range(len(tt[0])+1)]
 
@@ -61,7 +61,7 @@ def get_prime(tt):
     remains = []
 
     while True:
-       [ft_, r] = merge(ft) 
+       [ft_, r] = _merge(ft) 
        remains += r
        if (len(ft_)==0):
            break
@@ -71,7 +71,7 @@ def get_prime(tt):
     return remains
 # }}}
 
-def subset_problem(table):
+def _subset_problem(table):
 # {{{    
     #table内の全ての要素が2→完了，return
     fin_flag=1
@@ -104,7 +104,7 @@ def subset_problem(table):
                     table[i][j] = 2
 
         table[buf] = [2 for i in range(len(tmp))]
-        return [buf]+subset_problem(table)
+        return [buf]+_subset_problem(table)
     else:
         cand = -1
         for i in range(len(table)):
@@ -118,14 +118,14 @@ def subset_problem(table):
         tmp = table[cand]
         table[cand] = [2 for i in range(len(tmp))]
 
-        M_m = subset_problem(table)
+        M_m = _subset_problem(table)
         
         for j in range(len(tmp)):
             if(tmp[j]==1):
                 for i in range(len(table)):
                     table[i][j] = 2
 
-        M_p = [cand]+subset_problem(table)
+        M_p = [cand]+_subset_problem(table)
 
         if(len(M_m)<len(M_p)):
             return M_m
@@ -133,7 +133,7 @@ def subset_problem(table):
             return M_p
 # }}}
 
-def mcp(tt,cand): # simplest DNF generation
+def _mcp(tt,cand): # simplest DNF generation
 # {{{
     table = [[0 for i in range(len(tt))] for j in range(len(cand))]
     
@@ -141,7 +141,7 @@ def mcp(tt,cand): # simplest DNF generation
         for j in range(len(tt)):
             if(set(cand[i]) <= set(tt[j])):
                 table[i][j] = 1
-    winner = subset_problem(table)
+    winner = _subset_problem(table)
 
     ans = [cand[i] for i in winner]
     return ans
@@ -151,7 +151,7 @@ def qm(fnc):
 # {{{
     # fncの各ファクターに全てのリテラルが含まれるように修正
     # ex) リテラル数3の場合　[1,-2] -> [1,-2,3],[1,-2,-3]
-    flat = flatter(fnc)
+    flat = _flatter(fnc)
     maxi = max(flat)
     fnc_ = []
     for i in fnc:
@@ -175,13 +175,13 @@ def qm(fnc):
         else:
             fnc_ = fnc_ + lst
 
-    prime = get_prime(fnc_) #主項のみを抽出
-    return mcp(fnc_, prime) #元の論理関数に対する最小被覆問題を解き，必要な主項のみをさらに抽出
+    prime = _get_prime(fnc_) #主項のみを抽出
+    return _mcp(fnc_, prime) #元の論理関数に対する最小被覆問題を解き，必要な主項のみをさらに抽出
 # }}}
 
 def tseitin(dnf): # simplest DNF to CNV converstion
 # {{{
-    maxi = max(flatter(dnf))
+    maxi = max(_flatter(dnf))
     next = maxi + 1
 
     ans=[]
@@ -195,7 +195,7 @@ def tseitin(dnf): # simplest DNF to CNV converstion
     return ans
 # }}}
 
-def find_node(G, attr, value): #G内のnodeのうちattr=valueのものをリストで抽出
+def _find_node(G, attr, value): #G内のnodeのうちattr=valueのものをリストで抽出
 # {{{
 
     result = []
@@ -209,7 +209,7 @@ def find_node(G, attr, value): #G内のnodeのうちattr=valueのものをリス
     return result
 # }}}
 
-def find_max(G, attr): #G内のnodeがもつattrのうち最大値を出力（Gが空グラフの場合は0）
+def _find_max(G, attr): #G内のnodeがもつattrのうち最大値を出力（Gが空グラフの場合は0）
 # {{{
     maxi = -1
 
@@ -223,7 +223,7 @@ def find_max(G, attr): #G内のnodeがもつattrのうち最大値を出力（G�
         return max(v_list)
 # }}}
 
-def bcp(cnf, G, dl):
+def _bcp(cnf, G, dl):
 # {{{
     fin = 0
     while fin==0: #追加すべきノードがなくなるまで繰り返す
@@ -296,7 +296,7 @@ def bcp(cnf, G, dl):
     return [G, False]
 # }}}
 
-def decide(cnf, G, dl):
+def _decide(cnf, G, dl):
 ### {{{
     for i in range(len(cnf)):
         dec=0 #すでに真偽が決定したファクターかどうか
@@ -323,7 +323,7 @@ def decide(cnf, G, dl):
     if(dec==1): #全てのファクターの真偽が決定している→充足→割当の必要無→return True
         return [G, True]
     else: #割当
-        wl = find_max(G, 'w_level')
+        wl = _find_max(G, 'w_level')
         if(wl==0):
             wl =1
 
@@ -338,23 +338,23 @@ def decide(cnf, G, dl):
         return [G, False]
 # }}}
 
-def analyze_conflict(G):
+def _check_conflict(G):
 # {{{
-    maxi = find_max(G, 'd_level')
+    maxi = _find_max(G, 'd_level')
     return maxi
 # }}}
     
-def back_track(G, b_level, cnf):
+def _back_track(G, b_level, cnf):
 # {{{
-    dl_lst = find_node(G, 'd_level', b_level)
+    dl_lst = _find_node(G, 'd_level', b_level)
     
-    min_wl = find_max(G, 'w_level')
+    min_wl = _find_max(G, 'w_level')
     for i in dl_lst:#w_levelの最小値を探す
         tmp = G.node[i]['w_level']
         if(tmp<min_wl):
             min_wl = tmp
     
-    wl_lst = find_node(G, 'w_level', min_wl) #指定されたd_levelを持つノードのうち，最小のw_levelを持つノードのリスト
+    wl_lst = _find_node(G, 'w_level', min_wl) #指定されたd_levelを持つノードのうち，最小のw_levelを持つノードのリスト
     
     new_fct = [] #新しいファクターの作成
     for i in wl_lst:
@@ -377,31 +377,31 @@ def dpll(cnf): # SAT solver
     d_level = 0
     G = nx.DiGraph()
     
-    [G, conflict] = bcp(cnf, G, d_level)
+    [G, conflict] = _bcp(cnf, G, d_level)
     if(conflict):
         return [False]
     
     while True:
         d_level += 1
-        [G, sat] = decide(cnf, G, d_level)
+        [G, sat] = _decide(cnf, G, d_level)
         if(sat): #充足可能
-            node1 = find_node(G, 'value', 1) #1が割り当てられているリテラル
-            node0 = find_node(G, 'value', 0) #0が割り当てられているリテラル
+            node1 = _find_node(G, 'value', 1) #1が割り当てられているリテラル
+            node0 = _find_node(G, 'value', 0) #0が割り当てられているリテラル
             node0 = [-1*i for i in node0]
             ans = sorted(node1+node0, key=abs) #結合して絶対値順でソート
             return ans
         else:
             while True:
-                [G, conflict] = bcp(cnf, G, d_level)
+                [G, conflict] = _bcp(cnf, G, d_level)
                 if(not conflict): #コンフリクトしていない→（現時点では）バックトラックの必要無→break
                     break
 
-                b_level = analyze_conflict(G)
+                b_level = _check_conflict(G)
                 if(b_level==0): #一度もdecideせずにconflictしているということは，充足不可能
                     return [False]
                 else:
                     d_level = b_level-1
-                    G = back_track(G, b_level, cnf)
+                    G = _back_track(G, b_level, cnf)
 # }}}
 
 if __name__ == '__main__':
